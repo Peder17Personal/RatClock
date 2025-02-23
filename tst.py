@@ -1,4 +1,4 @@
+import datetime
 
-lenght = 90
-
-print (lenght)
+x = datetime.datetime.now()
+print(x)
