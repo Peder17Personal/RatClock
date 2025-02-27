@@ -1,11 +1,18 @@
 # RatClock
-smart alarm clock
+Smart alarm clock system
+By Lasse Pedersen
 
 Feature list:
 *sunrise alarm feature
 *text to speech
+*Weather fetcher
+*news fetcher
+*trafic fetcher
 
 
 MosCow:
-Set time by phone
+Alarm clock
+Speaker output
 Snose
+Sunrise feature
+
