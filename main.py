@@ -1,7 +1,6 @@
 #system admin LPE
 #Service API GIT, WeatherAPI, News
 
-
                         #import section
 import datetime
 

@@ -1,23 +1,37 @@
-import time
 import threading
+import time
+from datetime import datetime, timedelta
 
-def alarm_clock(target_hour):
-    while True:
-        current_hour = time.localtime().tm_hour
-        if current_hour == target_hour:
-            print("wake up")
-            break
-        time.sleep(60)  # Check every minute
+class AlarmClock:
+    def __init__(self, alarm_time):
+        self.alarm_time = alarm_time
+        self.running = False
 
-def run_in_background(target_hour):
-    alarm_thread = threading.Thread(target=alarm_clock, args=(target_hour,))
-    alarm_thread.daemon = True
-    alarm_thread.start()
+    def start(self):
+        self.running = True
+        self.thread = threading.Thread(target=self.run)
+        self.thread.start()
 
-# Set the target hour (24-hour format)
-target_hour = 7  # Change this to your desired hour
-run_in_background(target_hour)
+    def stop(self):
+        self.running = False
+        self.thread.join()
 
-# Keep the main program running
-while True:
-    time.sleep(1)
+    def run(self):
+        while self.running:
+            current_time = datetime.now()
+            print(f"Current time: {current_time.strftime('%H:%M:%S')}")
+            if current_time >= self.alarm_time:
+                print("Alarm! Time's up!")
+                self.stop()
+            time.sleep(1)
+
+if __name__ == "__main__":
+    alarm_time = "2025-03-07 14:01:00"  # Set alarm for 10 seconds from now
+    print(alarm_time)
+    alarm_clock = AlarmClock(alarm_time)
+    alarm_clock.start()
+
+    # Simulate other processes
+    for i in range(5):
+        print(f"Simulating other process {i+1}")
+        time.sleep(2)
