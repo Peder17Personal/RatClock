@@ -14,10 +14,10 @@ def set_alarm(alarm_time, alarm_day):
             return True
 
         time.sleep(30)  # Check every 30 seconds
-
+    return True
 
 def alarm(Name, day, time, recurrence, snooze, setting):
-    
+    return 0
 
 if __name__ == "__main__":
     alarm_time = "10:00"
