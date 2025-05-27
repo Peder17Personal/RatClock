@@ -1,0 +1,46 @@
+{
+    "alarms": [
+        {
+            "day": "Monday",
+            "time": "16:49",
+            "enabled": true,
+            "repeat": true
+        },
+        {
+            "day": "Tuesday",
+            "time": "07:00",
+            "enabled": true,
+            "repeat": true
+        },
+        {
+            "day": "Wednesday",
+            "time": "07:00",
+            "enabled": true,
+            "repeat": true
+        },
+        {
+            "day": "Thursday",
+            "time": "07:00",
+            "enabled": true,
+            "repeat": true
+        },
+        {
+            "day": "Friday",
+            "time": "07:00",
+            "enabled": true,
+            "repeat": true
+        },
+        {
+            "day": "Saturday",
+            "time": "09:00",
+            "enabled": false,
+            "repeat": false
+        },
+        {
+            "day": "Sunday",
+            "time": "09:00",
+            "enabled": false,
+            "repeat": false
+        }
+    ]
+}
