@@ -1,24 +1,39 @@
-#system admin LPE
-#Service API GIT, WeatherAPI, News
-
-
-                        #import section
+import requests
 import datetime
 
+def get_today_forecast(api_key):
+    city_name = "Aarhus,DK"
+    today = datetime.date.today()
+    print("today:", today)
+    print("city_name:", city_name)
 
+    url = f"https://api.openweathermap.org/data/2.5/forecast?q={city_name}&appid={api_key}&units=metric"
+    response = requests.get(url)
 
-def get_current_time():
-    # Get the current time
-    current_time = datetime.now()
-    # Format the time for better readability
-    formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
-    return formatted_time
+    if response.status_code != 200:
+        return f"Error: {response.status_code} - {response.text}"
 
-def main():
+    data = response.json()
+    forecasts = data.get("list", [])
 
-    # Call the function and print the current time
-    print("Current Time:", get_current_time())
-    print("Test")
+    today_forecasts = [
+        entry for entry in forecasts
+        if datetime.datetime.fromtimestamp(entry["dt"]).date() == today
+    ]
 
-    if __name__ == "__main__":
-        main()
+    if not today_forecasts:
+        return "No forecast data found for today."
+
+    output = f"Forecast for Aarhus, Denmark on {today}:\n"
+    for entry in today_forecasts:
+        time_str = datetime.datetime.fromtimestamp(entry["dt"]).strftime("%H:%M")
+        temp = entry["main"]["temp"]
+        desc = entry["weather"][0]["description"]
+        output += f"  - {time_str}: {temp:.1f}°C, {desc}\n"
+
+    return output
+
+# Example usage
+if __name__ == "__main__":
+    api_key = "126ceea2fc6945910fe44a6e47fb7432"  # Replace with your actual key
+    print(get_today_forecast(api_key))
