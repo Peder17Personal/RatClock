@@ -1,9 +1,6 @@
 import sqlite3
-import argparse
-import json
-import sys
 
-DB_NAME = "alarms.db"
+DB_NAME = "RatClock.db"
 
 def connect_db():
     return sqlite3.connect(DB_NAME)
@@ -12,7 +9,7 @@ def create_table():
     conn = connect_db()
     cursor = conn.cursor()
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS alarms (
+        CREATE TABLE IF NOT EXISTS alarm (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             alarm_time TEXT NOT NULL,
             alarm_date TEXT NOT NULL,
@@ -42,8 +39,13 @@ def insert_dummy_data():
         ('21:00', '27-06-2025', 'Night Alarm', 'Daily', True, 0, False),
     ]
     cursor.executemany('''
-        INSERT INTO alarms (alarm_time, alarm_date, title, scheduling, snooze, sensors, active)
+        INSERT INTO alarm (alarm_time, alarm_date, title, scheduling, snooze, sensors, active)
         VALUES (?, ?, ?, ?, ?, ?, ?)
     ''', dummy_alarms)
     conn.commit()
     conn.close()
+
+if __name__ == "__main__":
+    create_table()
+    insert_dummy_data()
+    print(f"Database '{DB_NAME}' created with table 'alarm' and dummy data inserted.")
