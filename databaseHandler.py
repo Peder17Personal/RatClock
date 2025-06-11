@@ -8,80 +8,42 @@ DB_NAME = "alarms.db"
 def connect_db():
     return sqlite3.connect(DB_NAME)
 
-def list_alarms():
-    conn = connect_db()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM alarms")
-    rows = cursor.fetchall()
-    columns = [col[0] for col in cursor.description]
-    conn.close()
-    for row in rows:
-        print(dict(zip(columns, row)))
-
-def add_alarm(args):
+def create_table():
     conn = connect_db()
     cursor = conn.cursor()
     cursor.execute('''
-        INSERT INTO alarms (alarm_time, title, scheduling, snooze, sensors, active)
-        VALUES (?, ?, ?, ?, ?, ?)
-    ''', (args.time, args.title, args.scheduling, args.snooze, args.sensors, args.active))
+        CREATE TABLE IF NOT EXISTS alarms (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            alarm_time TEXT NOT NULL,
+            alarm_date TEXT NOT NULL,
+            title TEXT NOT NULL,
+            scheduling TEXT NOT NULL,
+            snooze BOOLEAN NOT NULL,
+            sensors INTEGER NOT NULL,
+            active BOOLEAN NOT NULL
+        )
+    ''')
     conn.commit()
     conn.close()
-    print("Alarm added.")
 
-def delete_alarm(args):
+def insert_dummy_data():
     conn = connect_db()
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM alarms WHERE id = ?", (args.id,))
+    dummy_alarms = [
+        ('07:00', '19-06-2025', 'Morning Alarm', 'Mon-Fri', True, 2, True),
+        ('08:30', '20-06-2025', 'Weekend Wakeup', 'Sat-Sun', False, 1, False),
+        ('06:45', '15-06-2025', 'Gym Day', 'Once:2025-06-15', True, 3, True),
+        ('05:15', '21-06-2025', 'Early Hike', 'Sun', False, 2, True),
+        ('09:00', '22-06-2025', 'Meeting Reminder', 'Once:2025-06-22', True, 1, True),
+        ('10:30', '23-06-2025', 'Work Start', 'Mon-Fri', False, 2, True),
+        ('12:00', '24-06-2025', 'Lunch Break', 'Mon-Fri', False, 0, True),
+        ('15:00', '25-06-2025', 'Afternoon Alarm', 'Mon-Fri', True, 1, True),
+        ('18:00', '26-06-2025', 'Evening Alarm', 'Daily', False, 1, True),
+        ('21:00', '27-06-2025', 'Night Alarm', 'Daily', True, 0, False),
+    ]
+    cursor.executemany('''
+        INSERT INTO alarms (alarm_time, alarm_date, title, scheduling, snooze, sensors, active)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    ''', dummy_alarms)
     conn.commit()
     conn.close()
-    print(f"Alarm with ID {args.id} deleted.")
-
-def export_json():
-    conn = connect_db()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM alarms")
-    rows = cursor.fetchall()
-    columns = [col[0] for col in cursor.description]
-    conn.close()
-    data = [dict(zip(columns, row)) for row in rows]
-    print(json.dumps(data, indent=2))
-
-def main():
-    parser = argparse.ArgumentParser(description="Alarm CLI Tool")
-    subparsers = parser.add_subparsers(dest='command')
-
-    # list
-    subparsers.add_parser("list", help="List all alarms")
-
-    # add
-    add = subparsers.add_parser("add", help="Add a new alarm")
-    add.add_argument("--time", required=True, help="Alarm time in HH:MM format")
-    add.add_argument("--title", required=True, help="Alarm title")
-    add.add_argument("--scheduling", required=True, help="Scheduling info")
-    add.add_argument("--snooze", type=bool, default=False, help="Snooze enabled (True/False)")
-    add.add_argument("--sensors", type=int, default=0, help="Number of sensors")
-    add.add_argument("--active", type=bool, default=True, help="Is the alarm active?")
-
-    # delete
-    delete = subparsers.add_parser("delete", help="Delete alarm by ID")
-    delete.add_argument("--id", type=int, required=True, help="ID of alarm to delete")
-
-    # export
-    subparsers.add_parser("export", help="Export all alarms to JSON")
-
-    args = parser.parse_args()
-
-    if args.command == "list":
-        list_alarms()
-    elif args.command == "add":
-        add_alarm(args)
-    elif args.command == "delete":
-        delete_alarm(args)
-    elif args.command == "export":
-        export_json()
-    else:
-        parser.print_help()
-
-if __name__ == "__main__":
-    main()
