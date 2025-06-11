@@ -17,11 +17,12 @@ def create_table():
             scheduling TEXT NOT NULL,
             snooze BOOLEAN NOT NULL,
             sensors INTEGER NOT NULL,
-            active BOOLEAN NOT NULL
+            active BOOLEAN NOT NULL DEFAULT 1
         )
     ''')
     conn.commit()
     conn.close()
+
 
 def insert_dummy_data():
     conn = connect_db()
