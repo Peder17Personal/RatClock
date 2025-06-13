@@ -11,12 +11,12 @@ def create_table():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS alarm (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            alarm_time TEXT,
-            alarm_date TEXT,
-            title TEXT NOT NULL,
-            scheduling TEXT NOT NULL,
-            snooze BOOLEAN NOT NULL,
-            sensors INTEGER NOT NULL,
+            alarm_time TEXT DEFAULT 'NAN',
+            alarm_date TEXT DEFAULT 'NAN',
+            title TEXT DEFAULT 'NAN',
+            scheduling TEXT DEFAULT 'NAN',
+            snooze BOOLEAN DEFAULT 0,
+            sensors INTEGER NOT NULL DEFAULT 0,
             active BOOLEAN NOT NULL DEFAULT 1
         )
     ''')
