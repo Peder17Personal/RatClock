@@ -12,7 +12,7 @@ def create_table():
         CREATE TABLE IF NOT EXISTS alarm (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             alarm_time TEXT,
-            alarm_date TEXT NOT NULL,
+            alarm_date TEXT,
             title TEXT NOT NULL,
             scheduling TEXT NOT NULL,
             snooze BOOLEAN NOT NULL,
