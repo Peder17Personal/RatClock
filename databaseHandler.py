@@ -11,7 +11,7 @@ def create_table():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS alarm (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            alarm_time TEXT NOT NULL,
+            alarm_time TEXT,
             alarm_date TEXT NOT NULL,
             title TEXT NOT NULL,
             scheduling TEXT NOT NULL,
