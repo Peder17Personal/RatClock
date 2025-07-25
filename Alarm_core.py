@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 import json
 import pygame
 
+import alarm_function
+
 # Global variables
 alarm_time = None
 alarm_active = True
@@ -66,9 +68,8 @@ def clock_thread():
             if scheduler_running:
                 for day, time_str, enabled, repeat in schedule:
                     if day == today and time_str == current_time and enabled:
-                        print(f"\n⏰ Scheduled alarm for {today} at {time_str} is ringing! Type 'snooze' or 'exit'")
-                        alarm_active = False
-                        threading.Thread(target=play_alarm, args=("sound.mp3",)).start()                        
+                        alarm_function.play_local_alarm(1)  # Play local alarm
+                        print(f"🔔 Scheduled alarm for {day} at {time_str} is ringing")
                         break
 
         time.sleep(30)
@@ -85,7 +86,7 @@ def terminal_thread():
                 exit_flag = True
                 print("Exiting alarm clock.")
 
-            elif cmd.startswith("set time"):
+            elif cmd.startswith("set"):
                 try:
                     parts = cmd.split()
                     if len(parts) != 3:
@@ -189,8 +190,6 @@ def terminal_thread():
 def main():
     t1 = threading.Thread(target=clock_thread)
     t2 = threading.Thread(target=terminal_thread)
-   
-    
 
     t1.start()
     t2.start()
