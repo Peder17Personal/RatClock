@@ -34,7 +34,7 @@ def play_alarm(file_path="Alarm_tones/1.mp3", LoopCount=1):
     pygame.mixer.music.stop()
     pygame.mixer.quit()
 
-def alarm_logic(snoozeTime = 5):
+def alarm_logic(snoozeTime = 1):
     """Handles the alarm logic, play sound, activates light, and handle the snooze functionality."""
     
     global snoozeCount, stop_flag
@@ -43,7 +43,7 @@ def alarm_logic(snoozeTime = 5):
     while(stop_flag == False):
             
         print("Alarm triggered!\n")
-        play_alarm() #plays the alarm sound
+        alarm_function.__name__
 
         user_input = input("Type 'snooze' to snooze the alarm for 5 minutes or 'exit' to stop the alarm: ").strip().lower()
         

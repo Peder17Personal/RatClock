@@ -57,16 +57,19 @@ def play_text_to_speech(text="Good morning! Here's your schedule for today..."):
     engine.say(text)
     engine.runAndWait()
 
-# Example usage:
-if __name__ == "__main__":
+def main(alarmType="1"):
+
     print("Choose an audio type to play:")
-    print("1. Local Alarm")
+    print("1. Local mp3 file")
     print("2. Spotify Playlist")
     print("3. Internet Radio")
     print("4. News Audio")
     print("5. Text-to-Speech")
 
     choice = input("Enter number: ")
+
+    if choice == "":
+        choice = alarmType
 
     if choice == "1":
         play_local_alarm(2)
@@ -80,3 +83,8 @@ if __name__ == "__main__":
         play_text_to_speech()
     else:
         print("Invalid choice.")
+
+
+# Example usage:
+if __name__ == "__main__":
+    main()
