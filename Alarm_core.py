@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import json
 import pygame
 
+
 import alarm_function
 
 # Global variables
@@ -18,11 +19,13 @@ lock = threading.Lock()
 
 stop_flag = False
 
-def play_alarm(file_path):
+def play_alarm(file_path="Alarm_tones/1.mp3", LoopCount=1):
+    """Plays an MP3 from the Alarm_tone folder. filepath directs it to the specific file. 
+    LoopCount defines how many time it loops, -1 will run forever"""
     global stop_flag
     pygame.mixer.init()
     pygame.mixer.music.load(file_path)
-    pygame.mixer.music.play(loops=-1)  # Loop indefinitely
+    pygame.mixer.music.play(loops=LoopCount)  # -1 is running forever
 
     while not stop_flag:
         time.sleep(1)
@@ -75,9 +78,37 @@ def clock_thread():
         time.sleep(30)
 
 
+def timeKeeper(alarmTime=None):
+    """The function ticks every minuts ensuring precise time keeping. It will trigger when the next alarm time is hit. alarmTime format 2025-11-29 09:46"""
+
+    while not exit_flag:
+
+        now = datetime.now()
+        now_str = now.strftime("%Y-%m-%d %H:%M")
+        
+
+        print("now_str:\t", now_str, "\t\tAlarm time:\t", alarmTime)
+
+        if(now_str == alarmTime):
+            print("alarm triggered")
+            return 0
+
+        
+
+    print("TimeKeeper shuting down")
+    return 0
+
 def terminal_thread():
     global alarm_time, alarm_active, exit_flag, scheduler_running, schedule
     print("Welcome to the Alarm Clock!")
+
+    print("\n\nCommands:")
+    print("  start       → Load and start scheduled alarms")
+    print("  stop        → Stop scheduled alarms")
+    print("  set HH:MM   → Set one-time alarm")
+    print("  snooze      → Snooze current alarm for 5 minutes")
+    print("  exit        → Exit the program")
+    print("  help        → Show this help message")
 
     while not exit_flag:
         cmd = input(">> ").strip().lower()
@@ -86,7 +117,7 @@ def terminal_thread():
                 exit_flag = True
                 print("Exiting alarm clock.")
 
-            elif cmd.startswith("set"):
+            elif cmd.startswith("tst"):
                 try:
                     parts = cmd.split()
                     if len(parts) != 3:
@@ -94,9 +125,7 @@ def terminal_thread():
                     _, _, hhmm = parts
 
                     now = datetime.now()
-                    target_time = datetime.strptime(hhmm, "%H:%M").replace(
-                        year=now.year, month=now.month, day=now.day, second=0, microsecond=0
-                    )
+                    target_time = datetime.strptime(hhmm, "%H:%M").replace()
                     if target_time <= now:
                         target_time += timedelta(days=1)
 
@@ -107,9 +136,13 @@ def terminal_thread():
                     hours, remainder = divmod(int(time_diff.total_seconds()), 3600)
                     minutes, _ = divmod(remainder, 60)
 
+                    print("test time ", target_time)
+
                     print(f"🕒 One-time alarm set for {alarm_time.strftime('%Y-%m-%d %H:%M')} "
                           f"({hours}h {minutes}min from now)")
                     
+                    #timeKeeper(alarm_time)
+
                     # upload alarm to alameScheduel.json
                     try:
                         with open("alarmScheduel.json", "r") as f:
@@ -123,6 +156,31 @@ def terminal_thread():
 
                 except ValueError:
                     print("❌ Invalid format. Use: set time HH:MM")
+
+            elif cmd.startswith("set"):
+
+                if cmd == "set":
+
+                    print("Time set for +1 minutes from now\n")
+                    
+                    Target_dateTime = now.strftime("%Y-%m-%d %H:%M")
+
+                    timeKeeper(Target_dateTime) #sends alarm to timeKeeper function
+                
+                else:
+
+                    try:
+                        parts = cmd.split()
+                        if len(parts) != 3:
+                            raise ValueError
+                        _, targetDate, targetTime = parts
+                        
+                        Target_dateTime = targetDate + " " + targetTime
+
+                        timeKeeper(Target_dateTime) #sends alarm to timeKeeper function
+
+                    except ValueError:
+                        print("❌ Invalid format. Use: set time HH:MM")
 
             elif cmd == "snooze":
                 if alarm_time:
@@ -188,14 +246,21 @@ def terminal_thread():
                 print("❓ Unknown command. Type 'help' for available commands.")
 
 def main():
-    t1 = threading.Thread(target=clock_thread)
-    t2 = threading.Thread(target=terminal_thread)
+    
+    alarm = "2025-11-29 09:57"
+
+    terminal_thread()
+    
+
+
+    t1 = threading.Thread(target=timeKeeper)
+    #t2 = threading.Thread(target=terminal_thread)
 
     t1.start()
-    t2.start()
+    #t2.start()
 
     t1.join()
-    t2.join()
+    #t2.join()
 
 
 if __name__ == "__main__":
