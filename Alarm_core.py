@@ -15,6 +15,7 @@ scheduler_running = False
 last_reload_date = None
 schedule = []
 lock = threading.Lock()
+snoozeCount = 0
 
 
 stop_flag = False
@@ -32,6 +33,31 @@ def play_alarm(file_path="Alarm_tones/1.mp3", LoopCount=1):
 
     pygame.mixer.music.stop()
     pygame.mixer.quit()
+
+def alarm_logic(snoozeTime = 5):
+    """Handles the alarm logic, play sound, activates light, and handle the snooze functionality."""
+    
+    global snoozeCount, stop_flag
+    stop_flag = False
+    
+    while(stop_flag == False):
+            
+        print("Alarm triggered!\n")
+        play_alarm() #plays the alarm sound
+
+        user_input = input("Type 'snooze' to snooze the alarm for 5 minutes or 'exit' to stop the alarm: ").strip().lower()
+        
+        if user_input == "snooze":
+            time.sleep(snoozeTime * 60)  # Snooze for specified minutes
+            snoozeCount += 1
+            
+        elif user_input == "exit":
+            print("Alarm stopped.")
+            stop_flag = True
+            return False
+    return True
+
+
 
 def clock_thread():
     global alarm_time, alarm_active, exit_flag, schedule, scheduler_running, last_reload_date
@@ -77,7 +103,6 @@ def clock_thread():
 
         time.sleep(30)
 
-
 def timeKeeper(alarmTime=None):
     """The function ticks every minuts ensuring precise time keeping. It will trigger when the next alarm time is hit. alarmTime format 2025-11-29 09:46"""
 
@@ -86,14 +111,10 @@ def timeKeeper(alarmTime=None):
         now = datetime.now()
         now_str = now.strftime("%Y-%m-%d %H:%M")
         
-
-        print("now_str:\t", now_str, "\t\tAlarm time:\t", alarmTime)
-
         if(now_str == alarmTime):
-            print("alarm triggered")
+            alarm_logic()
             return 0
 
-        
 
     print("TimeKeeper shuting down")
     return 0
@@ -159,14 +180,19 @@ def terminal_thread():
 
             elif cmd.startswith("set"):
 
+                #input format: set 2025-11-29 09:46
+
                 if cmd == "set":
 
                     print("Time set for +1 minutes from now\n")
-                    
-                    Target_dateTime = now.strftime("%Y-%m-%d %H:%M")
 
-                    timeKeeper(Target_dateTime) #sends alarm to timeKeeper function
-                
+                    target_date_time = (datetime.now() + timedelta(minutes=1)).strftime("%Y-%m-%d %H:%M")
+                    
+                    print("target_date_time:\t", target_date_time)
+
+
+                    timeKeeper(target_date_time) #sends alarm to timeKeeper function
+
                 else:
 
                     try:
