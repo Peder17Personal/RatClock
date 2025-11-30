@@ -85,7 +85,7 @@ def play_alarm(file_path="Alarm_tones/1.mp3", LoopCount=1):
 
 
 def alarm_logic(snoozeTime = 1):
-    """Handles the alarm logic, play sound, activates light, and handle the snooze functionality."""
+    """Handles the alarm logic, play sound, activates light, and handle the snooze functionality. SnoozeTime = minutes"""
     
     global snoozeCount, stop_flag
     stop_flag = False
@@ -299,8 +299,6 @@ def main():
     
     terminalControl()
     
-
-
     t1 = threading.Thread(target=timeKeeper)
     #t2 = threading.Thread(target=terminal_thread)
     t3 = threading.Thread(target=alarm_function.main(2))
