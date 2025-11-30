@@ -1,5 +1,6 @@
 import pygame
 import time
+from datetime import datetime
 import webbrowser
 import os
 
@@ -49,40 +50,42 @@ def play_news():
     else:
         print("News audio file not found. You could integrate a text-to-speech feed here.")
 
-def play_text_to_speech(text="Good morning! Here's your schedule for today..."):
-    """Converts text to speech and plays it (requires pyttsx3)."""
+def play_text_to_speech(text="Good morning! Time to wake up."):
+    """Converts text to speech and plays it."""
     import pyttsx3
+
+    now = datetime.now()
+    #returns the current date and time in to valibles
+    date_str = now.strftime("%Y-%m-%d")
+    time_str = now.strftime("%H:%M")
+ 
+    text = f"Good morning! Today is {date_str} and the time is {time_str}."
+    
     engine = pyttsx3.init()
-    print("Speaking text...")
+
     engine.say(text)
     engine.runAndWait()
 
-def main(alarmType="1"):
+def main(alarmType=5):
 
-    print("Choose an audio type to play:")
-    print("1. Local mp3 file")
-    print("2. Spotify Playlist")
-    print("3. Internet Radio")
-    print("4. News Audio")
-    print("5. Text-to-Speech")
 
-    choice = input("Enter number: ")
+    #print("1. Local mp3 file\t2. Spotify Playlist\t3. Internet Radio\t4. News Audio\t5. Text-to-Speech")
 
-    if choice == "":
-        choice = alarmType
-
-    if choice == "1":
-        play_local_alarm(2)
-    elif choice == "2":
+    if alarmType == 1:
+        play_local_alarm(1)
+    elif alarmType == 2:
         play_spotify_playlist()
-    elif choice == "3":
+    elif alarmType == 3:
         play_radio_stream()
-    elif choice == "4":
+    elif alarmType == 4:
         play_news()
-    elif choice == "5":
+    elif alarmType == 5:
         play_text_to_speech()
     else:
         print("Invalid choice.")
+        return False
+    
+    return True
 
 
 # Example usage:

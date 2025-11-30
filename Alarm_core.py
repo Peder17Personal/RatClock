@@ -20,52 +20,14 @@ snoozeCount = 0
 
 stop_flag = False
 
-def play_alarm(file_path="Alarm_tones/1.mp3", LoopCount=1):
-    """Plays an MP3 from the Alarm_tone folder. filepath directs it to the specific file. 
-    LoopCount defines how many time it loops, -1 will run forever"""
-    global stop_flag
-    pygame.mixer.init()
-    pygame.mixer.music.load(file_path)
-    pygame.mixer.music.play(loops=LoopCount)  # -1 is running forever
-
-    while not stop_flag:
-        time.sleep(1)
-
-    pygame.mixer.music.stop()
-    pygame.mixer.quit()
-
-def alarm_logic(snoozeTime = 1):
-    """Handles the alarm logic, play sound, activates light, and handle the snooze functionality."""
-    
-    global snoozeCount, stop_flag
-    stop_flag = False
-    
-    while(stop_flag == False):
-            
-        print("Alarm triggered!\n")
-        alarm_function.__name__
-
-        user_input = input("Type 'snooze' to snooze the alarm for 5 minutes or 'exit' to stop the alarm: ").strip().lower()
-        
-        if user_input == "snooze":
-            time.sleep(snoozeTime * 60)  # Snooze for specified minutes
-            snoozeCount += 1
-            
-        elif user_input == "exit":
-            print("Alarm stopped.")
-            stop_flag = True
-            return False
-    return True
-
-
-
+    #ARCIVED
 def clock_thread():
     global alarm_time, alarm_active, exit_flag, schedule, scheduler_running, last_reload_date
     while not exit_flag:
         now = datetime.now()
         now_str = now.strftime("%Y-%m-%d %H:%M")
         today = now.strftime("%A")
-        current_time = now.strftime("%H:%M")
+        current_time = now.strftime("%H:set%M")
 
         with lock:
             # Reload alarm schedule at 04:00 if not already reloaded today
@@ -89,7 +51,7 @@ def clock_thread():
             if alarm_active and alarm_time:
                 alarm_time_str = alarm_time.strftime("%Y-%m-%d %H:%M")
                 if now_str >= alarm_time_str:
-                    print("\n⏰ Alarm ringing! Type 'snooze' or 'exit'")
+                    print("\n⏰ Alarm ringing! Type 'snooze' or 'stop'")
                     alarm_active = False
                     threading.Thread(target=play_alarm, args=("sound.mp3",)).start()
 
@@ -103,6 +65,66 @@ def clock_thread():
 
         time.sleep(30)
 
+def play_alarm(file_path="Alarm_tones/1.mp3", LoopCount=1):
+    """Plays an MP3 from the Alarm_tone folder. filepath directs it to the specific file. 
+    LoopCount defines how many time it loops, -1 will run forever"""
+    global stop_flag
+    pygame.mixer.init()
+    pygame.mixer.music.load(file_path)
+    pygame.mixer.music.play(loops=LoopCount)  # -1 is running forever
+
+    while not stop_flag:
+        time.sleep(1)
+
+    pygame.mixer.music.stop()
+    pygame.mixer.quit()
+
+    #ARCIVED
+
+
+
+
+def alarm_logic(snoozeTime = 1):
+    """Handles the alarm logic, play sound, activates light, and handle the snooze functionality."""
+    
+    global snoozeCount, stop_flag
+    stop_flag = False
+    
+    while(stop_flag == False):
+            
+        print("Alarm triggered!\n")
+
+        user_input = None
+
+        while True:
+            alarm_function.main(5)     # play alarm
+            user_input = input(
+                "Type 'snooze' to snooze the alarm for 5 minutes or 'stop' to stop the alarm: "
+            ).strip().lower()
+
+            if user_input in ("snooze", "stop"):
+                break
+
+        print("Alarm finished playing.\n")
+
+        
+        
+        if user_input == "snooze":
+            time.sleep(snoozeTime * 60)  # Snooze for specified minutes
+            snoozeCount += 1
+            print(f"Snoozed for {snoozeTime} minutes. Snooze count: {snoozeCount}")
+
+        elif snoozeCount >= 5:   
+            print("Maximum snooze limit reached. Stopping alarm.")
+            stop_flag = True
+
+        elif user_input == "stop":
+            print("Alarm stopped.")
+            stop_flag = True
+            return False
+    return True
+
+#Completed
 def timeKeeper(alarmTime=None):
     """The function ticks every minuts ensuring precise time keeping. It will trigger when the next alarm time is hit. alarmTime format 2025-11-29 09:46"""
 
@@ -119,7 +141,8 @@ def timeKeeper(alarmTime=None):
     print("TimeKeeper shuting down")
     return 0
 
-def terminal_thread():
+#completed
+def terminalControl():
     global alarm_time, alarm_active, exit_flag, scheduler_running, schedule
     print("Welcome to the Alarm Clock!")
 
@@ -271,22 +294,23 @@ def terminal_thread():
             else:
                 print("❓ Unknown command. Type 'help' for available commands.")
 
+
 def main():
     
-    alarm = "2025-11-29 09:57"
-
-    terminal_thread()
+    terminalControl()
     
 
 
     t1 = threading.Thread(target=timeKeeper)
     #t2 = threading.Thread(target=terminal_thread)
-
+    t3 = threading.Thread(target=alarm_function.main(2))
     t1.start()
     #t2.start()
+    t3.start
 
     t1.join()
     #t2.join()
+    t3.join()
 
 
 if __name__ == "__main__":
