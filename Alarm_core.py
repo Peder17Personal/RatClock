@@ -2,7 +2,7 @@ import threading
 import time
 from datetime import datetime, timedelta
 import json
-import pygame
+
 
 
 import alarm_function
@@ -53,7 +53,8 @@ def clock_thread():
                 if now_str >= alarm_time_str:
                     print("\n⏰ Alarm ringing! Type 'snooze' or 'stop'")
                     alarm_active = False
-                    threading.Thread(target=play_alarm, args=("sound.mp3",)).start()
+                    print(f"One-time alarm for {alarm_time_str} is ringing")
+                    alarm_function.play_local_alarm(1)  # Play local alarm
 
             # Trigger scheduled alarms if running
             if scheduler_running:
@@ -64,24 +65,6 @@ def clock_thread():
                         break
 
         time.sleep(30)
-
-def play_alarm(file_path="Alarm_tones/1.mp3", LoopCount=1):
-    """Plays an MP3 from the Alarm_tone folder. filepath directs it to the specific file. 
-    LoopCount defines how many time it loops, -1 will run forever"""
-    global stop_flag
-    pygame.mixer.init()
-    pygame.mixer.music.load(file_path)
-    pygame.mixer.music.play(loops=LoopCount)  # -1 is running forever
-
-    while not stop_flag:
-        time.sleep(1)
-
-    pygame.mixer.music.stop()
-    pygame.mixer.quit()
-
-    #ARCIVED
-
-
 
 
 def alarm_logic(snoozeTime = 1):
