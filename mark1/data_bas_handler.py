@@ -121,5 +121,5 @@ def check_for_updates():
 
 if __name__ == "__main__":
     init_db()
-    a = get_all_alarms()
+    a = get_next_alarm()
     print(a)
