@@ -1,4 +1,14 @@
 import sqlite3
+from datetime import datetime
+
+def validate_time_format(time_str):
+    try:
+        # Strict format check HH:MM
+        valid_time = datetime.strptime(time_str, "%H:%M")
+        return valid_time.strftime("%H:%M")  # normalized format
+    except ValueError:
+        raise ValueError("Time must be in HH:MM format (e.g. 07:30)")
+
 
 DB_FILE = "alarms.db"
 
@@ -34,9 +44,13 @@ def init_db():
             conn.close()
 
 def add_alarm(description, time, date, repetition, pre_alarm, alarm_logic, post_alarm, enable):
+    '''Adds a new alarm to the database after validating the time format. Attributes: description (str), time (str in HH:MM), date (str in YYYY-MM-DD), repetition (str), pre_alarm (str), alarm_logic (str), post_alarm (str), enable (bool)'''
     try:
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
+
+        # Validate time format
+        time = validate_time_format(time)
 
         cursor.execute("""
             INSERT INTO Alarms (Description, Time, Date, Repeatition, Pre_alarm, Alarm_logic, Post_alarm, Enable)
@@ -45,6 +59,9 @@ def add_alarm(description, time, date, repetition, pre_alarm, alarm_logic, post_
 
         conn.commit()
         print("Alarm added successfully.")
+
+    except ValueError as ve:
+        print(f"Input error: {ve}")
 
     except sqlite3.Error as e:
         print(f"Database error: {e}")
@@ -109,15 +126,44 @@ def get_all_alarms():
             conn.close()
 
 def dummy_data_insert():
-    add_alarm("Morning Alarm", "07:00:00", "2024-07-01", "Daily", "5 minutes before", "Standard", "Snooze for 10 minutes", True)
-    add_alarm("Meeting Reminder", "14:00:00", "2024-07-01", "None", "10 minutes before", "Standard", "No snooze", True)
-    add_alarm("Workout Alarm", "18:00:00", "2024-07-01", "Weekly", "15 minutes before", "Standard", "Snooze for 5 minutes", True)
-    add_alarm("Medication Reminder", "09:00:00", "2024-07-01", "Daily", "30 minutes before", "Standard", "No snooze", True)
-    add_alarm("Bedtime Alarm", "22:00:00", "2024-07-01", "Daily", "1 hour before", "Standard", "Snooze for 15 minutes", True)
+    add_alarm("Morning Alarm", "07:00", "2024-07-01", "Daily", "5 minutes before", "Standard", "Snooze for 10 minutes", True)
+    add_alarm("Meeting Reminder", "14:00", "2024-07-01", "None", "10 minutes before", "Standard", "No snooze", True)
+    add_alarm("Workout Alarm", "18:00", "2024-07-01", "Weekly", "15 minutes before", "Standard", "Snooze for 5 minutes", True)
+    add_alarm("Medication Reminder", "09:00", "2024-07-01", "Daily", "30 minutes before", "Standard", "No snooze", True)
+    add_alarm("Bedtime Alarm", "22:00", "2024-07-01", "Daily", "1 hour before", "Standard", "Snooze for 15 minutes", True)
 
 def check_for_updates():
     # Placeholder for update checking logic
     pass
 
+def delete_all_alarms():
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+
+        cursor.execute("DELETE FROM Alarms")
+        conn.commit()
+        print("All alarms deleted successfully.")
+
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+
+    finally:
+        if conn:
+            conn.close()
+
 if __name__ == "__main__":
     init_db()
+    dummy_data_insert()
+
+dataSet = (
+    'Test of adding an alarm',
+    '12:20',
+    '2024-04-04',
+    'Daily',
+    '5 minutes before',
+    'Standard',
+    'Snooze for 10 minutes',
+    1
+)
+
